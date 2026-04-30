@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="batchProcessingJob" 
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/jobXML_2_0.xsd"
+	version="2.0"
+>
+    <step id="myChunkStep">
+        <chunk  item-count="25">
+            <reader ref="de.mathema.batch.job.CustomerItemReader"/>
+            <processor ref="de.mathema.batch.job.CustomerItemProcessor"/>
+            <writer ref="de.mathema.batch.job.CustomerItemWriter"/>
+        </chunk>
+    </step>
+</job>

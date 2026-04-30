@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="batchProcessingJob" 
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/jobXML_2_0.xsd"
+	version="2.0"
+>
+    <step id="myChunkStep">
+        <chunk checkpoint-policy="item" item-count="5">
+            <reader ref="de.mathema.batch.job.myChunkStep.MyItemReader">
+            <properties>
+                    <property name="firstItem" value="#{partitionPlan['firstItem']}"/>
+                    <property name="lastItem" value="#{partitionPlan['lastItem']}"/>
+                </properties>     
+			</reader>
+            <processor ref="de.mathema.batch.job.myChunkStep.MyItemProcessor"/>
+            <writer ref="de.mathema.batch.job.myChunkStep.MyItemWriter"/>
+        </chunk>
+        <partition>
+            <!-- plan partitions="5">
+                <properties partition="0">
+                    <property name="firstItem" value="0"></property>
+                    <property name="lastItem" value="49"></property>
+                </properties>
+                <properties partition="1">
+                    <property name="firstItem" value="50"></property>
+                    <property name="lastItem" value="99"></property>
+                </properties>
+                <properties partition="2">
+                    <property name="firstItem" value="100"></property>
+                    <property name="lastItem" value="149"></property>
+                </properties>
+                <properties partition="3">
+                    <property name="firstItem" value="150"></property>
+                    <property name="lastItem" value="199"></property>
+                </properties>
+                <properties partition="4">
+                    <property name="firstItem" value="200"></property>
+                    <property name="lastItem" value="249"></property>
+                </properties>
+            </plan -->
+            <mapper ref="de.mathema.batch.job.myChunkStep.partition.MyPartitionMapper" />
+        </partition>
+    </step>
+</job>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="batchProcessingJob" 
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/jobXML_2_0.xsd"
+	version="2.0"
+>
+    <flow id="initializeFlow" next="addColumnsFlow">
+        <step id="myChunkStep">
+            <chunk>
+                <reader ref="de.mathema.batch.job.initializeFlow.MyItemReader"/>
+                <processor ref="de.mathema.batch.job.initializeFlow.MyItemProcessor"/>
+                <writer ref="de.mathema.batch.job.initializeFlow.MyItemWriter"/>
+            </chunk>
+        </step>
+    </flow>
+
+    <flow id="addColumnsFlow" next="defineMembershipFlow">
+        <flow id="addMembershipColumnFlow" next="addDiscountFlow">
+            <step id="memberShipAdderStep">
+                <batchlet ref="de.mathema.batch.job.addColumnsFlow.BatchletAddMembership"/>
+            </step>
+        </flow>
+        <flow id="addDiscountFlow">
+            <step id="addDiscountStep">
+                <batchlet ref="de.mathema.batch.job.addColumnsFlow.BatchletDiscountPercentageColumn"/>
+            </step>
+        </flow>
+    </flow>
+
+    <flow id="defineMembershipFlow" next="calculateDiscountFlow">
+        <step id="calculatePremiumMembershipStep">
+            <chunk>
+                <reader ref="de.mathema.batch.job.defineMembershipFlow.DefineMembershipReader"/>
+                <processor ref="de.mathema.batch.job.defineMembershipFlow.DefineMembershipProcessor"/>
+                <writer ref="de.mathema.batch.job.defineMembershipFlow.DefineMembershipWriter"/>
+            </chunk>
+        </step>
+    </flow>
+
+    <flow id="calculateDiscountFlow" next="discountDecider">
+        <step id="calculateDiscountStep">
+            <chunk>
+                <reader ref="de.mathema.batch.job.calculateDiscountPercentageFlow.DBItemReaderAllColumns"/>
+                <processor
+                        ref="de.mathema.batch.job.calculateDiscountPercentageFlow.DBSetDiscountItemProcessor"/>
+                <writer ref="de.mathema.batch.job.calculateDiscountPercentageFlow.DBItemWriterAllColumns"/>
+            </chunk>
+        </step>
+    </flow>
+
+    <decision id="discountDecider" ref="de.mathema.batch.job.decision.DiscountDecider">
+        <next on="CALCULATE_EXTRA_DISCOUNT" to="calculateExtraDiscountFlow"/>
+    </decision>
+
+    <flow id="calculateExtraDiscountFlow" >
+        <step id="calculateExtraDiscountStep">
+            <chunk>
+                <reader ref="de.mathema.batch.job.calculateDiscountPercentageFlow.DBItemReaderAllColumns"/>
+                <processor
+                        ref="de.mathema.batch.job.calculateDiscountPercentageFlow.DBCalculateExtraItemProcessor"/>
+                <writer ref="de.mathema.batch.job.calculateDiscountPercentageFlow.DBItemWriterAllColumns"/>
+            </chunk>
+        </step>
+    </flow>
+
+</job>

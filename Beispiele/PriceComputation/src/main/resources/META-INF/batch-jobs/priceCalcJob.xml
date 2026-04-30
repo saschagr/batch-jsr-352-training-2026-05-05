@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="priceCalc" 
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/jobXML_2_0.xsd"
+	version="2.0">
+
+	<step id="BestellungenEinlesen" next="GesamtpreisBerechnen">
+		<batchlet ref="de.mathema.batch.decision.batchlet.BestellungenEinlesenBatchlet" />
+	</step>
+
+	<step id="GesamtpreisBerechnen" next="KaeufermitgliedschaftUeberpruefen">
+		<batchlet ref="de.mathema.batch.decision.batchlet.GesamtpreisBerechnenBatchlet" />
+	</step>
+
+	<step id="KaeufermitgliedschaftUeberpruefen" next="RabattDecision">
+		<batchlet ref="de.mathema.batch.decision.batchlet.KauferMitgliedschaftPruefenBatchlet" />
+	</step>
+	
+	<decision id="RabattDecision" ref="de.mathema.batch.decision.RabattDecider">
+		<next on="MEMBER" to="PremiumRabattBerechnen"/>
+		<next on="STANDARD" to="StandardRabattBerechnen"/>
+	</decision>
+	
+	<step id="PremiumRabattBerechnen">
+		<batchlet ref="de.mathema.batch.decision.batchlet.PremiumRabattBerechnenBatchlet" />
+	</step>
+	
+	<step id="StandardRabattBerechnen">
+		<batchlet ref="de.mathema.batch.decision.batchlet.StandardRabattBerechnenBatchlet" />
+	</step>
+		
+</job>

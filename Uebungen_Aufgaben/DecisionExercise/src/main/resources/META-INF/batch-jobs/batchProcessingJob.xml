@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="batchProcessingJob" 
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/jobXML_2_0.xsd"
+	version="2.0"
+>
+    <flow id="initializeFlow" next="addColumnsFlow">
+        <step id="myChunkStep">
+            <chunk>
+                <reader ref="de.mathema.batch.job.initializeFlow.MyItemReader"/>
+                <processor ref="de.mathema.batch.job.initializeFlow.MyItemProcessor"/>
+                <writer ref="de.mathema.batch.job.initializeFlow.MyItemWriter"/>
+            </chunk>
+        </step>
+    </flow>
+</job>

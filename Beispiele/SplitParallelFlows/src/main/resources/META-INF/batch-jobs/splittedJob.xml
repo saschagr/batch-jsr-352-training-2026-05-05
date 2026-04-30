@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="splittedJob" 
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/jobXML_2_0.xsd"
+	version="2.0">
+
+	<step id="prepareUserData" next="parallelWork">
+		<batchlet ref="de.mathema.batch.split.batchlet.PrepareUserDataBatchlet"></batchlet>
+	</step>
+
+	<split id="parallelWork" next="collectResults">
+		<flow id="flow1">
+			<step id="work1">
+				<batchlet ref="de.mathema.batch.split.batchlet.SlowWorkingBatchlet"></batchlet>
+			</step>
+		</flow>
+		<flow id="flow2">
+			<step id="work2">
+				<batchlet ref="de.mathema.batch.split.batchlet.FastWorkingBatchlet"></batchlet>
+			</step>
+		</flow>
+		<flow id="flow3">
+			<step id="work3">
+				<batchlet ref="de.mathema.batch.split.batchlet.MediumWorkingBatchlet"></batchlet>
+			</step>
+		</flow>
+	</split>
+
+	<step id="collectResults">
+		<batchlet ref="de.mathema.batch.split.batchlet.CollectResultsBatchlet"></batchlet>
+	</step>
+</job>

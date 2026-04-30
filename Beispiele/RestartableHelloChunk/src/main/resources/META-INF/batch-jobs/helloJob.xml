@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="helloJob" restartable="true" 
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/jobXML_2_0.xsd"
+	version="2.0"
+>
+    <step id="helloStep">
+		<chunk checkpoint-policy="custom">
+			<reader ref="de.mathema.batch.hello.chunk.HelloReader" />
+			<processor ref="de.mathema.batch.hello.chunk.HelloProcessor" />
+			<writer ref="de.mathema.batch.hello.chunk.HelloWriter" />
+			<checkpoint-algorithm ref="de.mathema.batch.hello.chunk.SimpleCheckpointAlgorithm" />
+			<skippable-exception-classes>
+				<include class="java.lang.UnsupportedOperationException"/>
+			</skippable-exception-classes>
+			<retryable-exception-classes>
+				<include class="java.lang.IllegalArgumentException"/>
+			</retryable-exception-classes>
+			<!-- no-rollback-exception-classes>
+				<include class="java.lang.IllegalArgumentException" />
+			</no-rollback-exception-classes -->
+		</chunk>
+    </step>
+</job>

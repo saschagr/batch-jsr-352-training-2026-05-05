@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="helloJob" 
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/jobXML_2_0.xsd"
+	version="2.0"
+>
+    <step id="helloStep" next="readProcessedHelloData">
+		<chunk>
+			<reader ref="helloPartitionedReader">
+				<properties>
+                    <property name="firstItem" value="#{partitionPlan['firstItem']}"/>
+                    <property name="lastItem" value="#{partitionPlan['lastItem']}"/>
+                </properties>     
+			</reader>
+			<processor ref="helloProcessor" />
+			<writer ref="helloWriter" />
+		</chunk>
+		<partition>
+			<plan partitions="2">
+				<properties partition="0">
+					<property name="firstItem" value="0"/>
+					<property name="lastItem" value="2"/>
+				</properties>
+				<properties partition="1">
+					<property name="firstItem" value="3"/>
+					<property name="lastItem" value="5"/>
+				</properties>
+			</plan>
+			<!-- mapper ref="helloPartitionMapper" /-->
+			<collector ref="helloPartitionCollector" />
+			<analyzer ref="helloPartitionAnalyzer" />
+			<reducer ref="helloPartitionReducer" />
+		</partition>
+    </step>
+	<step id="readProcessedHelloData">
+		<batchlet ref="helloBatchlet" />
+	</step>
+</job>

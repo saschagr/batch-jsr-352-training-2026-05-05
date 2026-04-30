@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="batchProcessingJob" 
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/jobXML_2_0.xsd"
+	version="2.0"
+>
+    <step id="myChunkStep">
+        <chunk checkpoint-policy="custom" retry-limit="25" skip-limit="15">
+            <reader ref="de.mathema.batch.job.CustomerItemReader"/>
+            <processor ref="de.mathema.batch.job.CustomerItemProcessor"/>
+            <writer ref="de.mathema.batch.job.CustomerItemWriter"/>
+            <checkpoint-algorithm ref="de.mathema.batch.job.SimpleCheckpointAlgorithm" />
+			<skippable-exception-classes>
+				<include class="java.lang.IllegalArgumentException"/>
+			</skippable-exception-classes>
+			<retryable-exception-classes>
+				<include class="java.lang.IllegalStateException"/>
+			</retryable-exception-classes>
+			<no-rollback-exception-classes>
+				<include class="java.lang.IllegalStateException" />
+			</no-rollback-exception-classes>
+        </chunk>
+    </step>
+</job>
