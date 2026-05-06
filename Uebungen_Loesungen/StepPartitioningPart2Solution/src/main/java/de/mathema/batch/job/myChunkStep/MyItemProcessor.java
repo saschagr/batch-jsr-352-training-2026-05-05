@@ -15,7 +15,7 @@ public class MyItemProcessor implements ItemProcessor {
 
 	int customerCounter = 0;
 
-	HashMap<Integer, Customer> collectedData = new HashMap<>();
+	HashMap<String, Customer> collectedData = new HashMap<>();
 
 	@Override
 	public Object processItem(Object item) throws Exception {
@@ -23,7 +23,7 @@ public class MyItemProcessor implements ItemProcessor {
 		Customer customer = new Customer(data[0], data[1], data[2], data[3]);
 		if(customer.getCity().equals(Constants.MÜNCHEN)) {
 			customerCounter++;
-			collectedData.put(customerCounter, customer);
+			collectedData.put(customer.getCustomerId(), customer);
 		}
 		stepContext.setPersistentUserData(collectedData);
 		return customer;

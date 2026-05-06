@@ -6,23 +6,28 @@ import java.util.HashMap;
 import de.mathema.batch.job.Customer;
 import jakarta.batch.api.partition.PartitionAnalyzer;
 import jakarta.batch.runtime.BatchStatus;
+import jakarta.batch.runtime.context.JobContext;
 import jakarta.batch.runtime.context.StepContext;
 import jakarta.inject.Inject;
 
 public class MyPartitionAnalyzer implements PartitionAnalyzer {
-    HashMap<Integer, Customer> collection = new HashMap<>();
+    HashMap<String, Customer> collection = new HashMap<>();
 
     @Inject
-    StepContext stepContext;
+    JobContext jobContext;
 
     @Override
     public void analyzeCollectorData(Serializable data) throws Exception {
-        collection = (HashMap<Integer, Customer>) data;
+        HashMap<String, Customer> collectorData = (HashMap<String, Customer>) data;
         if (collection != null) {
             System.out.println("PartitionAnalyzer.analyzeCollectorData()");
             System.out.println(collection.size() + " Customers live in München.");
         }
-        stepContext.setPersistentUserData(collection);
+        if (collectorData != null) {
+        	collection.putAll(collectorData);
+        }
+        
+        jobContext.setTransientUserData(collection);
     }
 
     @Override

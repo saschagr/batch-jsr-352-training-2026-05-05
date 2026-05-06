@@ -13,6 +13,7 @@ import de.mathema.batch.util.Constants;
 import de.mathema.batch.util.DatabaseConfig;
 import de.mathema.batch.util.DatabaseConnectionService;
 import jakarta.batch.api.partition.PartitionReducer;
+import jakarta.batch.runtime.context.JobContext;
 import jakarta.batch.runtime.context.StepContext;
 import jakarta.inject.Inject;
 
@@ -20,8 +21,8 @@ import jakarta.inject.Inject;
 public class MyPartitionReducer implements PartitionReducer {
 
     @Inject
-    StepContext stepContext;
-    HashMap<Integer, Customer> analyzedData = new HashMap<>();
+    JobContext jobContext;
+    HashMap<String, Customer> analyzedData = new HashMap<>();
 
     @Override
     public void beginPartitionedStep() throws Exception {
@@ -45,10 +46,10 @@ public class MyPartitionReducer implements PartitionReducer {
     @Override
     public void beforePartitionedStepCompletion() {
         System.out.println("PartitionReducer.beforePartitionedStepCompletion()");
-        analyzedData = (HashMap<Integer, Customer>) stepContext.getPersistentUserData();
+        analyzedData = (HashMap<String, Customer>) jobContext.getTransientUserData();
         if (analyzedData.size() != 0) {
-            System.out.println("PartitionAnalyzer.analyzeCollectorData()");
-            for(Map.Entry<Integer, Customer> entry : analyzedData.entrySet())   {
+            System.out.println("PartitionReducer.beforePartitionedStepCompletion(), Anzahl: " + analyzedData.size());
+            for(Map.Entry<String, Customer> entry : analyzedData.entrySet())   {
                 System.out.println("Key: " + entry.getKey() + ", Customer: " + entry.getValue().getLastName() + ", " + entry.getValue().getFirstName() + ", Wohnort: " + entry.getValue().getCity() );
             };
         }
@@ -61,7 +62,7 @@ public class MyPartitionReducer implements PartitionReducer {
 
     @Override
     public void afterPartitionedStepCompletion(PartitionStatus status) {
-        analyzedData = (HashMap<Integer, Customer>) stepContext.getPersistentUserData();
+        analyzedData = (HashMap<String, Customer>) jobContext.getTransientUserData();
         if (analyzedData != null) {
             List<Customer> filteredData = analyzedData.entrySet().stream()
                     .filter(entry -> (entry.getValue().getLastName().equals(Constants.SCHWARZ)))
